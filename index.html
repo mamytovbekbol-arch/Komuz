@@ -63,13 +63,14 @@ footer{text-align:center;color:var(--mu);font-size:13px;padding:24px 16px 40px;b
 <section class="hero"><h1>КОМУЗ</h1><p>Кыргызские продукты в Москве: чай, лапша, мясо, курут, орехи, сладости и многое другое.</p><p>Выбирайте товары, собирайте корзину — заказ уйдёт в WhatsApp одним нажатием.</p><a class="cta" href="#menu">Смотреть ассортимент</a></section>
 <section class="info">
 <div><b>📍 Адрес</b>г. Москва, Южнопортовая 18<br>Метро Кожуховская, 2-й выход<br>Ориентир: стоматология «Дента»</div>
+<div><b>🚚 Доставка</b>При заказе от 2000 ₽.<br>Доставка до подъезда — доплата 500 ₽.</div>
 <div><b>⏰ Часы работы</b>Ежедневно с 10:00 до 23:00</div>
 <div><b>📞 Телефоны</b><a href="tel:+79912356771">+7 991 235-67-71</a> Байэл<br><a href="tel:+79777635725">+7 977 763-57-25</a> Эсен</div></section>
 <main id="menu"></main>
 <button class="cartbtn fab" onclick="openC()">🛒 Корзина · <span id="ct2">0</span> ₽</button>
 <footer>© КОМУЗ · Кыргыз продукция · Южнопортовая 18, Москва · Цены могут меняться, наличие уточняйте в WhatsApp<br><button id="admb" onclick="admOpen()" aria-label="Управление товарами">+</button></footer>
 <div class="drawer" id="dr"><div class="shade" onclick="closeC()"></div><div class="panel"><div class="ph2"><h3>Корзина</h3><button class="x" onclick="closeC()">✕</button></div><div class="items" id="its"></div>
-<div class="foot"><div class="tot"><span>Итого</span><span><span id="tt">0</span> ₽</span></div>
+<div class="foot"><div class="un" style="margin-bottom:8px">🚚 Доставка — при заказе от 2000 ₽, до подъезда доплата 500 ₽.</div><div class="tot"><span>Итого</span><span><span id="tt">0</span> ₽</span></div>
 <div class="who"><label><input type="radio" name="w" value="79912356771" checked><span>Байэл</span></label><label><input type="radio" name="w" value="79777635725"><span>Эсен</span></label></div>
 <input class="t" id="nm" placeholder="Ваше имя"><textarea id="cm" rows="2" placeholder="Комментарий (самовывоз / доставка, адрес)"></textarea>
 <button class="wa" id="send" onclick="send()">Отправить заказ в WhatsApp</button></div></div></div>
