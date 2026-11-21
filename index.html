@@ -143,7 +143,10 @@ async function ghUpdate(g,fn,msg){
   const w=await gapi(g,pth,{m:'PUT',b:{message:msg,content:enc(JSON.stringify(J)),branch:g.branch,sha}});
   if(w.ok)return J;if(w.status!==409&&w.status!==422)throw new Error('GitHub '+w.status+(w.status===404?' (нет доступа к репозиторию)':''))}
  throw new Error('не получилось сохранить, повторите')}
-async function ghImg(g,key,data){const pth=gp(g,'img/'+key+'.jpg');const w=await gapi(g,pth,{m:'PUT',b:{message:'Фото '+key,content:data.split(',')[1],branch:g.branch}});if(!w.ok)throw new Error('фото: GitHub '+w.status)}
+async function ghImg(g,key,data){const pth=gp(g,'img/'+key+'.jpg');
+ for(let t=0;t<2;t++){let sha;const r=await gapi(g,pth,{q:'?ref='+encodeURIComponent(g.branch)});if(r.ok){const j=await r.json();sha=j.sha}
+  const w=await gapi(g,pth,{m:'PUT',b:{message:'Фото '+key,content:data.split(',')[1],branch:g.branch,sha}});
+  if(w.ok)return;if(t||(w.status!==422&&w.status!==409))throw new Error('фото: GitHub '+w.status+(w.status===404?' (нет доступа к репозиторию)':w.status===403||w.status===401?' (токен не подходит или нет прав)':''))}}
 let RM=[];
 function mergeRemote(J){RM=J.items||[];RM.forEach(p=>{if(!P.some(q=>q[0]===p[0]))P.push(p);if(p[5]&&J.imgs&&J.imgs[p[5]])IMG[p[5]]=J.imgs[p[5]]});recats();for(const k in cart)if(!BY[k])delete cart[k];render()}
 async function admAdd(){
