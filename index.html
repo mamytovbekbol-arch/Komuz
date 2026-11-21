@@ -148,21 +148,21 @@ async function ghImg(g,key,data){const pth=gp(g,'img/'+key+'.jpg');
   const w=await gapi(g,pth,{m:'PUT',b:{message:'Фото '+key,content:data.split(',')[1],branch:g.branch,sha}});
   if(w.ok)return;if(t||(w.status!==422&&w.status!==409))throw new Error('фото: GitHub '+w.status+(w.status===404?' (нет доступа к репозиторию)':w.status===403||w.status===401?' (токен не подходит или нет прав)':''))}}
 let RM=[];
-function mergeRemote(J){RM=J.items||[];RM.forEach(p=>{if(!P.some(q=>q[0]===p[0]))P.push(p);if(p[5]&&J.imgs&&J.imgs[p[5]])IMG[p[5]]=J.imgs[p[5]]});recats();for(const k in cart)if(!BY[k])delete cart[k];render()}
+function mergeRemote(J){RM=J.items||[];RM.forEach(p=>{if(!P.some(q=>q[0]===p[0]))P.push(p);if(p[5]&&!IMG[p[5]]&&J.imgs&&J.imgs[p[5]])IMG[p[5]]=J.imgs[p[5]]});recats();for(const k in cart)if(!BY[k])delete cart[k];render()}
 async function admAdd(){
  let c=$('a_cat').value;if(c==='__new')c=$('a_newcat').value;c=cl(c);
  const n=cl($('a_name').value),u=cl($('a_unit').value),pr=parseInt($('a_price').value,10);
  if(!c||!n||!(pr>0)){alert('Заполните категорию, название и цену');return}
- const id=Math.max(...P.map(p=>p[0]))+1,f=$('a_file').files[0],g=getG();let key=null;
+ const id=Date.now(),f=$('a_file').files[0],g=getG();let key=null;
  if(f){try{key=(GH(g)?'g':'n')+id;IMG[key]=await readImg(f)}catch(e){key=null;alert('Не удалось прочитать фото — товар добавлен без фото')}}
  const p=[id,c,n,pr,u,key];
  if(GH(g)){$('a_st').textContent='Сохраняю на GitHub…';
   try{if(key)await ghImg(g,key,IMG[key]);
-   await ghUpdate(g,J=>{if(J.items.some(q=>q[0]===id))throw new Error('товар с таким номером уже есть — обновите страницу и повторите');J.items.push(p);if(key)J.imgs[key]='img/'+key+'.jpg'},'Добавлен товар: '+n);
-   RM.push(p)}catch(e){if(key)delete IMG[key];$('a_st').textContent='';alert('Не удалось сохранить на GitHub: '+e.message);return}}
+   const J2=await ghUpdate(g,J=>{J.items.push(p);if(key)J.imgs[key]='img/'+key+'.jpg'},'Добавлен товар: '+n);
+   mergeRemote(J2)}catch(e){if(key)delete IMG[key];$('a_st').textContent='';alert('Не удалось сохранить на GitHub: '+e.message);return}}
  else{const X=getX();X.items.push(p);if(key)X.imgs[key]=IMG[key];
   if(!setX(X))alert('Браузер не смог сохранить товар (мало места). Скачайте обновлённый сайт сейчас, чтобы не потерять.')}
- P.push(p);recats();render();admList();
+ if(!P.some(q=>q[0]===id))P.push(p);recats();render();admList();
  ['a_name','a_unit','a_price','a_file','a_newcat'].forEach(i=>$(i).value='');$('a_pv').style.display='none';
  $('a_cat').innerHTML=cats.map(x=>`<option${x===c?' selected':''}>${x}</option>`).join('')+'<option value="__new">＋ Новая категория…</option>';$('a_newcat').style.display='none';
  $('a_st').textContent=GH(g)?'Сохранено на GitHub ✓ '+n+' — у всех появится через 1–2 минуты':'Добавлено ✓ '+n}
@@ -173,7 +173,10 @@ async function admDel(id){if(!confirm('Удалить этот товар?'))ret
   RM=RM.filter(q=>q[0]!==id)}
  const X=getX();X.items=X.items.filter(q=>q[0]!==id);if(p&&p[5])delete X.imgs[p[5]];setX(X);
  const i=P.findIndex(q=>q[0]===id);if(i>=0)P.splice(i,1);delete cart[id];save();recats();render();admList()}
-fetch('products.json?'+Date.now()).then(r=>r.ok?r.json():null).then(J=>{if(J)mergeRemote(J)}).catch(()=>{});
+(async()=>{const g=getG();let J=null;
+ if(GH(g)){try{const r=await gapi(g,gp(g,'products.json'),{q:'?ref='+encodeURIComponent(g.branch)});if(r.ok){const j=await r.json();J=JSON.parse(dec(j.content))}}catch(e){}}
+ if(!J){try{const r=await fetch('products.json?'+Date.now());if(r.ok)J=await r.json()}catch(e){}}
+ if(J)mergeRemote(J)})();
 function admExport(){
  const d=document.documentElement.cloneNode(true);
  ['menu','chips','its','a_list'].forEach(i=>d.querySelector('#'+i).innerHTML='');
